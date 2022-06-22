@@ -14,6 +14,7 @@ enum Token_Type {
 
     TOKEN_IDENTIFIER = 128,
     TOKEN_INTEGER,
+    TOKEN_FLOAT,
 
     TOKEN_NOT_EQUAL_TO,
     TOKEN_EQUAL_TO,
@@ -46,6 +47,7 @@ struct Token {
     bool32 is_keyword;
     union {
         int64  int_val; // INT_MIN....  -2147483648
+        real32 float_val;
         char* identifier;
     } data;
 };
