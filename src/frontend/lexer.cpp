@@ -282,6 +282,7 @@ const char* token_type_to_desc(Token_Type token_type) {
     switch (token_type) {
 
     case TOKEN_INTEGER: { return "intger litreal"; } break;
+    case TOKEN_FLOAT: { return "float litreal"; } break;
     case TOKEN_IDENTIFIER: { return "identifier"; } break;
     case TOKEN_END: { return "EOF"; } break;
     case TOKEN_NOT_EQUAL_TO: { return "!="; } break;
