@@ -1,6 +1,9 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
+#include <stddef.h>
+#include <assert.h>
+
 template <typename T>
 struct Array {
     size_t len = 0; //数组的长度

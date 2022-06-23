@@ -91,14 +91,17 @@ bool32 Tokenizer::scan_next_token() {
         t.type = TOKEN_FLOAT;
         sscanf(expr + cur, "%f", &t.data.float_val);
         next_char();
-        while (isdigit(expr[cur]) || (expr[cur] >= 'a' && expr[cur] <= 'f') || (expr[cur] >= 'A' && expr[cur] <= 'F') || expr[cur] == '+' || expr[cur] = '-') next_char();
+        while (isdigit(expr[cur]) || (expr[cur] >= 'a' && expr[cur] <= 'f') || (expr[cur] >= 'A' && expr[cur] <= 'F') || expr[cur] == '+' || expr[cur] == '-' || expr[cur] == 'p' || expr[cur] == 'P' || expr[cur] == 'l' || expr[cur] == 'L') next_char();
     }
     else if (isdigit(c)) {
-        int tempcur = cur;
-        bool floatFlag = false;
+    	int tempcur = cur;
+    	if (expr[cur + 1] == 'x' || expr[cur + 1] == 'X') { tempcur += 2; }
+        bool floatFlag = false; 
+        if (expr[tempcur] == '.')
+            floatFlag = true;
         while (isdigit(expr[tempcur]) || (expr[tempcur] >= 'a' && expr[tempcur] <= 'f') || (expr[tempcur] >= 'A' && expr[tempcur] <= 'F')) {
             tempcur++;
-            if (expr[tempcur] == '.' || expr[tempcur] == '-' || expr[tempcur] == '+')
+            if (expr[tempcur] == '.' || expr[tempcur] == '-' || expr[tempcur] == '+' || expr[tempcur] == 'p' || expr[tempcur] == 'P' || expr[tempcur] == 'l' || expr[tempcur] == 'L')
                 floatFlag = true;
         }
         if (floatFlag) {
@@ -108,12 +111,11 @@ bool32 Tokenizer::scan_next_token() {
             while (isdigit(expr[cur]) || (expr[cur] >= 'a' && expr[cur] <= 'f') || (expr[cur] >= 'A' && expr[cur] <= 'F')) next_char();
             if (expr[cur] == '.' )
                 next_char();
-            while (isdigit(expr[cur]) || (expr[cur] >= 'a' && expr[cur] <= 'f') || (expr[cur] >= 'A' && expr[cur] <= 'F') || expr[cur] == '+' || expr[cur] = '-') next_char();
+            while (isdigit(expr[cur]) || (expr[cur] >= 'a' && expr[cur] <= 'f') || (expr[cur] >= 'A' && expr[cur] <= 'F') || expr[cur] == '+' || expr[cur] == '-' || expr[cur] == 'p' || expr[cur] == 'P' || expr[cur] == 'l' || expr[cur] == 'L') next_char();
         }
         else {
             t.type = TOKEN_INTEGER;
             sscanf(expr + cur, "%" PRIi64, &t.data.int_val);
-            // eats 0x before hex number
             if (expr[cur + 1] == 'x' || expr[cur + 1] == 'X') { next_char(); next_char(); }
             while (isdigit(expr[cur]) || (expr[cur] >= 'a' && expr[cur] <= 'f') || (expr[cur] >= 'A' && expr[cur] <= 'F')) next_char();
         }
@@ -295,6 +297,7 @@ const char* token_type_to_desc(Token_Type token_type) {
     case TOKEN_LOGICAL_OR: { return "||"; } break;
     case TOKEN_KEYWORD_IF: { return "if"; } break;
     case TOKEN_KEYWORD_ELSE: { return "else"; } break;
+    case TOKEN_KEYWORD_WHILE: { return "while"; } break;
     case TOKEN_KEYWORD_INT: { return "int"; } break;
     case TOKEN_KEYWORD_FLOAT: { return "float"; } break;
     case TOKEN_KEYWORD_RETURN: { return "return"; } break;
@@ -311,7 +314,8 @@ const char* token_type_to_desc(Token_Type token_type) {
 
 const char* token_to_desc(Token* token) {
     const char* desc = token_type_to_desc(token->type);
-    if (!desc) {
+    std::string temtoken = desc;
+    if (temtoken == "intger litreal" || temtoken == "float litreal" || temtoken == "identifier") {
         char* other_desc = new char[1024];
         switch (token->type) {
         case TOKEN_IDENTIFIER: { sprintf(other_desc, "identifier '%s'", token->data.identifier); } break;
